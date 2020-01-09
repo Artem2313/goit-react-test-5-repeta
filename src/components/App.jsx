@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import ArticleList from './ArticleList/ArticleList';
 import Loader from './Loader/Loader';
 import ErrorNotification from './ErrorNotification/ErrorNotification';
-import SearchForm from './SearchForm/SearchForm';
+// import SearchForm from './SearchForm/SearchForm';
+import SeacrhBox from './SeacrhBox/SeacrhBox';
 import * as ArticleApi from '../services/ArticleApi';
 
 const mapper = articles => {
@@ -18,15 +19,16 @@ export default class App extends Component {
     articles: [],
     isLoading: false,
     error: null,
+    querry: '',
   };
 
   componentDidMount() {
     this.fetchArticles();
   }
 
-  fetchArticles = querry => {
+  fetchArticles = () => {
     this.setState({ isLoading: true });
-    ArticleApi.fetchArticles(querry)
+    ArticleApi.fetchArticles(this.state.querry)
       .then(({ data }) => {
         this.setState({ articles: mapper(data.hits) });
       })
@@ -34,11 +36,19 @@ export default class App extends Component {
       .finally(() => this.setState({ isLoading: false }));
   };
 
+  hadleQuerryChange = e => {
+    this.setState({ querry: e.target.value });
+  };
+
   render() {
-    const { articles, isLoading, error } = this.state;
+    const { articles, isLoading, error, querry } = this.state;
     return (
       <div>
-        <SearchForm onSubmit={this.fetchArticles} />
+        <SeacrhBox
+          value={querry}
+          onChange={this.hadleQuerryChange}
+          onSeacrh={this.fetchArticles}
+        />
         {error && <ErrorNotification text={error.message} />}
         {isLoading && <Loader />}
         {articles.length > 0 && <ArticleList items={articles} />}
