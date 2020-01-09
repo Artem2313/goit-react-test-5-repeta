@@ -20,6 +20,7 @@ export default class SearchForm extends Component {
     return (
       <form onSubmit={this.handleSubmit}>
         <input type="text" value={querry} onChange={this.handleChange} />
+        <button type="submit">Search</button>
       </form>
     );
   }
