@@ -21,20 +21,24 @@ export default class App extends Component {
   };
 
   componentDidMount() {
+    this.fetchArticles();
+  }
+
+  fetchArticles = querry => {
     this.setState({ isLoading: true });
-    ArticleApi.fetchArticles()
+    ArticleApi.fetchArticles(querry)
       .then(({ data }) => {
         this.setState({ articles: mapper(data.hits) });
       })
       .catch(error => this.setState({ error }))
-      .finally(this.setState({ isLoading: false }));
-  }
+      .finally(() => this.setState({ isLoading: false }));
+  };
 
   render() {
     const { articles, isLoading, error } = this.state;
     return (
       <div>
-        <SearchForm onSubmit={console.log} />
+        <SearchForm onSubmit={this.fetchArticles} />
         {error && <ErrorNotification text={error.message} />}
         {isLoading && <Loader />}
         {articles.length > 0 && <ArticleList items={articles} />}
