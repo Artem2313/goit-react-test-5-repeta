@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import ArticleList from './ArticleList/ArticleList';
 import Loader from './Loader/Loader';
 import ErrorNotification from './ErrorNotification/ErrorNotification';
-// import SearchForm from './SearchForm/SearchForm';
-import SeacrhBox from './SeacrhBox/SeacrhBox';
+import SearchForm from './SearchForm/SearchForm';
+import CategorySelelctor from './SeacrhBox/CategorySelelctor';
 import * as ArticleApi from '../services/ArticleApi';
 
 const mapper = articles => {
@@ -19,16 +19,23 @@ export default class App extends Component {
     articles: [],
     isLoading: false,
     error: null,
-    querry: '',
+    category: '',
   };
 
   componentDidMount() {
     this.fetchArticles();
   }
 
-  fetchArticles = () => {
+  componentDidUpdate(prevProps, prevState) {
+    const { category } = this.state;
+    if (prevState.category !== category) {
+      this.fetchArticles(category);
+    }
+  }
+
+  fetchArticles = querry => {
     this.setState({ isLoading: true });
-    ArticleApi.fetchArticles(this.state.querry)
+    ArticleApi.fetchArticles(querry)
       .then(({ data }) => {
         this.setState({ articles: mapper(data.hits) });
       })
@@ -36,18 +43,19 @@ export default class App extends Component {
       .finally(() => this.setState({ isLoading: false }));
   };
 
-  hadleQuerryChange = e => {
-    this.setState({ querry: e.target.value });
+  handleCategoryChange = e => {
+    this.setState({ category: e.target.value });
   };
 
   render() {
-    const { articles, isLoading, error, querry } = this.state;
+    const { articles, isLoading, error, category } = this.state;
     return (
       <div>
-        <SeacrhBox
-          value={querry}
-          onChange={this.hadleQuerryChange}
-          onSeacrh={this.fetchArticles}
+        <SearchForm onSubmit={this.fetchArticles} />
+        <CategorySelelctor
+          options={['html', 'css', 'javascript']}
+          value={category}
+          onChange={this.handleCategoryChange}
         />
         {error && <ErrorNotification text={error.message} />}
         {isLoading && <Loader />}
