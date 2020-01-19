@@ -1,44 +1,32 @@
-import React, { Component } from 'react';
-import ArticleList from './ArticleList/ArticleList';
-import Loader from './Loader/Loader';
-import ErrorNotification from './ErrorNotification/ErrorNotification';
-import SearchForm from './SearchForm/SearchForm';
-import * as ArticleApi from '../services/ArticleApi';
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import Home from '../pages/Home';
+import About from '../pages/About';
+import Articles from '../pages/Articles';
+import NotFound from '../pages/NotFound';
+import Nav from './Nav.jsx/Nav';
+import ArticlePage from '../pages/ArticlePage';
 
-const mapper = articles => {
-  return articles.map(({ objectID: id, url: link, ...props }) => ({
-    id,
-    link,
-    ...props,
-  }));
+const containerStyles = {
+  maxWidth: 1170,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  padding: 'padding: 0 16px',
 };
 
-export default class App extends Component {
-  state = {
-    articles: [],
-    isLoading: false,
-    error: null,
-  };
+const App = () => {
+  return (
+    <div style={containerStyles}>
+      <Nav />
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route path="/articles/:id" component={ArticlePage} />
+        <Route path="/articles" component={Articles} />
+        <Route path="/about" component={About} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
+  );
+};
 
-  componentDidMount() {
-    this.setState({ isLoading: true });
-    ArticleApi.fetchArticles()
-      .then(({ data }) => {
-        this.setState({ articles: mapper(data.hits) });
-      })
-      .catch(error => this.setState({ error }))
-      .finally(this.setState({ isLoading: false }));
-  }
-
-  render() {
-    const { articles, isLoading, error } = this.state;
-    return (
-      <div>
-        <SearchForm onSubmit={console.log} />
-        {error && <ErrorNotification text={error.message} />}
-        {isLoading && <Loader />}
-        {articles.length > 0 && <ArticleList items={articles} />}
-      </div>
-    );
-  }
-}
+export default App;

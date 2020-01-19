@@ -1,9 +1,13 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://hn.algolia.com/api/v1/search?query=';
+axios.defaults.baseURL = 'http://localhost:8000';
 
-export const fetchArticles = (querry = 'react') => {
-  return axios.get(BASE_URL + querry);
+export const fetchArticles = (category = null) => {
+  const url = category ? `/articles?category=${category}` : '/articles';
+
+  return axios.get(url).then(response => response.data);
 };
 
-export const dummy = () => null;
+export const fetchArticleWithId = id => {
+  return axios.get(`/articles/${id}`).then(response => response.data);
+};

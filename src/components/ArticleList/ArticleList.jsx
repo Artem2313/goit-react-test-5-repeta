@@ -1,26 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
-const ArticleList = ({ items }) => (
+const ArticleList = ({ items = [] }) => (
   <ul>
-    {items.map(({ id, link, title }) => (
-      <li key={id}>
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          {title}
-        </a>
+    {items.map(item => (
+      <li key={item.id}>
+        <Link to={`/articles/${item.id}`}>{item.title}</Link>
       </li>
     ))}
   </ul>
 );
-
-ArticleList.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      link: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
-};
 
 export default ArticleList;
