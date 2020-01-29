@@ -1,13 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import withLog from '../hoc/withLog';
+import ArticleListItem from './ArticleListItem';
+import Togglable from '../hoc/Togglable';
 
 const ArticleList = ({ items }) => (
   <ul>
     {items.map(({ id, link, title }) => (
       <li key={id}>
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          {title}
-        </a>
+        <Togglable>
+          {({ isOpen, onToggle }) => (
+            <div>
+              <button type="button" onClick={onToggle}>
+                {isOpen ? 'Hide' : 'Show'}
+              </button>
+              {isOpen && <ArticleListItem title={title} link={link} />}
+            </div>
+          )}
+        </Togglable>
       </li>
     ))}
   </ul>
@@ -23,4 +33,4 @@ ArticleList.propTypes = {
   ).isRequired,
 };
 
-export default ArticleList;
+export default withLog(ArticleList);
